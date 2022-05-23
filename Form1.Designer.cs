@@ -35,6 +35,7 @@
             this.audioPLCheckBox = new System.Windows.Forms.CheckBox();
             this.bitrateLabel = new System.Windows.Forms.Label();
             this.downloadSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.fileNameLabel = new System.Windows.Forms.Label();
             this.saveLocationBox = new System.Windows.Forms.TextBox();
             this.saveLocationLabel = new System.Windows.Forms.Label();
             this.fileNameFormatLink = new System.Windows.Forms.LinkLabel();
@@ -43,8 +44,6 @@
             this.ytURLLabel = new System.Windows.Forms.Label();
             this.ytURLBox = new System.Windows.Forms.TextBox();
             this.downloadButton = new System.Windows.Forms.Button();
-            this.downloadProgressBar = new System.Windows.Forms.ProgressBar();
-            this.fileNameLabel = new System.Windows.Forms.Label();
             this.downloadTypeGroupBox.SuspendLayout();
             this.downloadSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -129,6 +128,15 @@
             this.downloadSettingsGroupBox.TabStop = false;
             this.downloadSettingsGroupBox.Text = "Download settings";
             // 
+            // fileNameLabel
+            // 
+            this.fileNameLabel.AutoSize = true;
+            this.fileNameLabel.Location = new System.Drawing.Point(6, 60);
+            this.fileNameLabel.Name = "fileNameLabel";
+            this.fileNameLabel.Size = new System.Drawing.Size(58, 15);
+            this.fileNameLabel.TabIndex = 10;
+            this.fileNameLabel.Text = "File name";
+            // 
             // saveLocationBox
             // 
             this.saveLocationBox.Location = new System.Drawing.Point(89, 94);
@@ -194,7 +202,7 @@
             // 
             // downloadButton
             // 
-            this.downloadButton.Location = new System.Drawing.Point(321, 218);
+            this.downloadButton.Location = new System.Drawing.Point(321, 189);
             this.downloadButton.Name = "downloadButton";
             this.downloadButton.Size = new System.Drawing.Size(75, 23);
             this.downloadButton.TabIndex = 6;
@@ -202,28 +210,11 @@
             this.downloadButton.UseVisualStyleBackColor = true;
             this.downloadButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // downloadProgressBar
-            // 
-            this.downloadProgressBar.Location = new System.Drawing.Point(18, 189);
-            this.downloadProgressBar.Name = "downloadProgressBar";
-            this.downloadProgressBar.Size = new System.Drawing.Size(682, 23);
-            this.downloadProgressBar.TabIndex = 7;
-            // 
-            // fileNameLabel
-            // 
-            this.fileNameLabel.AutoSize = true;
-            this.fileNameLabel.Location = new System.Drawing.Point(6, 60);
-            this.fileNameLabel.Name = "fileNameLabel";
-            this.fileNameLabel.Size = new System.Drawing.Size(58, 15);
-            this.fileNameLabel.TabIndex = 10;
-            this.fileNameLabel.Text = "File name";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(712, 246);
-            this.Controls.Add(this.downloadProgressBar);
+            this.ClientSize = new System.Drawing.Size(712, 216);
             this.Controls.Add(this.downloadButton);
             this.Controls.Add(this.ytURLBox);
             this.Controls.Add(this.ytURLLabel);
@@ -257,7 +248,6 @@
         private Label ytURLLabel;
         private TextBox ytURLBox;
         private Button downloadButton;
-        private ProgressBar downloadProgressBar;
         private Label fileNameLabel;
     }
 }

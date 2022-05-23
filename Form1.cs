@@ -60,6 +60,7 @@ namespace YTget
                 if (!audioplchecked)
                 {
                     RunCMD($"youtube-dl.exe -x --audio-format mp3 --audio-quality {bitrate}k -o \"{saveLocation}\\{fileName}s.%(ext)s\" \"{ytURL}\"");
+
                 }
                 if (audioplchecked)
                 {
