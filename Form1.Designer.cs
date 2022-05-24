@@ -157,7 +157,6 @@
             // fileNameFormatLink
             // 
             this.fileNameFormatLink.AutoSize = true;
-            this.fileNameFormatLink.Enabled = false;
             this.fileNameFormatLink.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.fileNameFormatLink.Location = new System.Drawing.Point(92, 78);
             this.fileNameFormatLink.Name = "fileNameFormatLink";
@@ -169,7 +168,6 @@
             // 
             // fileNameBox
             // 
-            this.fileNameBox.Enabled = false;
             this.fileNameBox.Location = new System.Drawing.Point(89, 52);
             this.fileNameBox.Name = "fileNameBox";
             this.fileNameBox.Size = new System.Drawing.Size(307, 23);
