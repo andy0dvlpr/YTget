@@ -10,8 +10,7 @@ win.resizable(False, False)
 def validateLink(*args):
     insertedLink = linkEntry.get()
     if insertedLink.startswith("https://www.youtube.com/watch?v="):
-        validTextString.set("This is a valid link!")
-        validLabel.config(fg="green")
+        validTextString.set("")
     elif insertedLink.startswith("https://youtube.com/playlist?list="):
         validTextString.set("This is a playlist link! All videos will be downloaded sequentially.")
         validLabel.config(fg="green")
