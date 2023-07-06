@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import font
+from tkinter import filedialog
 
 ytget_version = "3.0"
 
@@ -37,14 +38,34 @@ audioButton = tk.Radiobutton(formatFrame, text="Audio", variable=downloadFormat,
 audioButton.select() # We need to have a default option selected.
 videoButton = tk.Radiobutton(formatFrame, text="Video", variable=downloadFormat, value="video")
 
-## GEOMETRY
+DLFrame = tk.Frame(win)
+DLLabel = tk.Label(DLFrame, text="Download location:")
+DLOptions = ["Default location", "Choose another location..."]
+DLSel = tk.StringVar()
+DLSel.set(DLOptions[0])
+def changeDL(*args):
+    if DLSel.get() == DLOptions[1]:
+        DLSel.set(filedialog.askdirectory())
+        if not DLSel.get(): # If the user pressed "Cancel" on the folder selection dialog, revert back to default.
+            DLSel.set(DLOptions[0])
+downloadLocation = tk.OptionMenu(DLFrame, DLSel, *DLOptions, command=changeDL)
+downloadLocation.config(width=30)
+
+## GEOMETRY ##
+
 linkLabel.grid(row=1, column=1, sticky="w")
-linkEntry.grid(row=2, column=1)
+linkEntry.grid(row=2, column=1, columnspan=2)
 validLabel.grid(row=3, column=1, columnspan=2, sticky="w")
+
 formatFrame.grid(row=4, column=1, sticky="w")
 # Part of formatFrame:
 formatLabel.grid(row=1, column=1)
 audioButton.grid(row=2, column=1, sticky="w")
 videoButton.grid(row=3, column=1, sticky="w")
+
+DLFrame.grid(row=4, column=2)
+# Part of DLFrame:
+DLLabel.grid(row=1, column=1)
+downloadLocation.grid(row=2, column=1)
 
 win.mainloop()
