@@ -1,14 +1,29 @@
+import os
+import json
 import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
 from PIL import ImageTk, Image
 
 ytget_version = "3.0"
+ytget_optfolder = os.environ["APPDATA"] + "\\YTget"
+if not os.path.exists(ytget_optfolder):
+    os.makedirs(ytget_optfolder)
+# Read settings:
+try:
+    optFile = open(ytget_optfolder + "\\settings", "r")
+except FileNotFoundError:
+    # The settings file does not exist, so initialize the settings blank.
+    defaultDL = ""
+else:
+    # Load settings.
+    locals().update(json.loads(optFile.read())) # Take the stored variables and load them.
 
 win = tk.Tk()
 win.title("YTget " + ytget_version)
 win.resizable(False, False)
-win.iconphoto(False, tk.PhotoImage(file = "images/icon-256p.png"))
+window_icon = tk.PhotoImage(file = "images/icon-256p.png")
+win.iconphoto(False, window_icon)
 
 def closeProgram():
     win.destroy()
@@ -18,12 +33,58 @@ def aboutWindowOpen():
     aboutwin = tk.Toplevel(win)
     aboutwin.title("About YTget")
     aboutwin.resizable(False, False)
-    aboutwin.iconphoto(False, tk.PhotoImage(file = "images/icon-256p.png"))
+    aboutwin.iconphoto(False, window_icon)
+
+def optWindowOpen():
+    optwin = tk.Toplevel(win)
+    optwin.title("YTget Preferences")
+    optwin.resizable(False, False)
+    optwin.iconphoto(False, window_icon)
+
+    optw = tk.Frame(optwin) # Frame for universal padding.
+    opt_defaultDLLabel = tk.Label(optw, text="Default save location:")
+    opt_defaultDL = tk.StringVar()
+    if not defaultDL: # If the setting is blank, use default:
+        opt_defaultDL.set(os.environ["USERPROFILE"] + "\\Downloads")
+    else:
+        opt_defaultDL.set(defaultDL)
+    opt_defaultDLEntry = tk.Entry(optw, textvariable=opt_defaultDL, width=30)
+    def opt_getDefaultDL():
+        optwin.attributes("-topmost", 0) # Due to a tkinter bug, child windows go behind root windows when a file dialog opens.
+        newDefaultDL = filedialog.askdirectory()
+        optwin.attributes("-topmost", 1) # Now we set it back. This is how we circumvent the tkinter bug.
+        if newDefaultDL: # If the user selected a folder
+            opt_defaultDL.set(newDefaultDL)
+    opt_defaultDLButton = tk.Button(optw, text="Choose location", command=opt_getDefaultDL)
+
+    # OK and Cancel Buttons:
+    def opt_SaveSettings():
+        opt_Settings = {
+            "defaultDL": opt_defaultDL.get()
+        }
+        jsonSettings = json.dumps(opt_Settings)
+        optFile = open(ytget_optfolder + "\\settings", "w")
+        optFile.write(jsonSettings)
+        optFile.close()
+    opt_ButtonFrame = tk.Frame(optw)
+    opt_SaveButton = tk.Button(opt_ButtonFrame, text="OK", command=opt_SaveSettings)
+    opt_CancelButton = tk.Button(opt_ButtonFrame, text="Cancel")
+
+    optw.grid(row=1, column=1, padx=20, pady=10)
+    opt_defaultDLLabel.grid(row=1, column=1, sticky="w")
+    opt_defaultDLEntry.grid(row=2, column=1)
+    opt_defaultDLButton.grid(row=2, column=2, padx=10)
+    opt_ButtonFrame.grid(row=99, column=1, columnspan=2)
+    # Part of opt_ButtonFrame:
+    opt_SaveButton.grid(row=1, column=1, sticky="e", padx=3, pady=5)
+    opt_CancelButton.grid(row=1, column=2, sticky="w", padx=3, pady=5)
 
 # Menubar
 menubar = tk.Menu(win)
 # File
 filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="Preferences", command=optWindowOpen)
+filemenu.add_separator()
 filemenu.add_command(label="Exit", command=closeProgram)
 menubar.add_cascade(label="File", menu=filemenu)
 # Edit
@@ -103,7 +164,7 @@ fYTgetLogos.grid(column=1, row=1)
 lYTgetLogo.pack(side="left")
 lYTgetTextLogo.pack(side="right")
 
-w.grid(column=1, row=2)
+w.grid(column=1, row=2, padx=20, pady=10)
 linkLabel.grid(row=1, column=1, sticky="w")
 linkEntry.grid(row=2, column=1, columnspan=2)
 validLabel.grid(row=3, column=1, columnspan=2, sticky="w")
