@@ -10,6 +10,38 @@ win.title("YTget " + ytget_version)
 win.resizable(False, False)
 win.iconphoto(False, tk.PhotoImage(file = "images/icon-256p.png"))
 
+def closeProgram():
+    win.destroy()
+
+def aboutWindowOpen():
+# About window
+    aboutwin = tk.Toplevel(win)
+    aboutwin.title("About YTget")
+    aboutwin.resizable(False, False)
+    aboutwin.iconphoto(False, tk.PhotoImage(file = "images/icon-256p.png"))
+
+# Menubar
+menubar = tk.Menu(win)
+# File
+filemenu = tk.Menu(menubar, tearoff=0)
+filemenu.add_command(label="Exit", command=closeProgram)
+menubar.add_cascade(label="File", menu=filemenu)
+# Edit
+editmenu = tk.Menu(menubar, tearoff=0)
+editmenu.add_command(label="Cut")
+editmenu.add_command(label="Copy")
+editmenu.add_command(label="Paste")
+editmenu.add_command(label="Delete")
+editmenu.add_command(label="Select All")
+menubar.add_cascade(label="Edit", menu=editmenu)
+# Help
+helpmenu = tk.Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Check for Updates")
+helpmenu.add_command(label="View on GitHub")
+helpmenu.add_command(label="About YTget", command=aboutWindowOpen)
+menubar.add_cascade(label="Help", menu=helpmenu)
+win.config(menu=menubar)
+
 # Display a message if the link is invalid, or is a playlist.
 def validateLink(*args):
     insertedLink = linkEntry.get()
