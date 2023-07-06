@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
+from PIL import ImageTk, Image
 
 ytget_version = "3.0"
 
 win = tk.Tk()
 win.title("YTget " + ytget_version)
 win.resizable(False, False)
+win.iconphoto(False, tk.PhotoImage(file = "images/icon-256p.png"))
 
 # Display a message if the link is invalid, or is a playlist.
 def validateLink(*args):
