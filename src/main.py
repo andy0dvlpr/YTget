@@ -49,7 +49,7 @@ def changeDL(*args):
         if not DLSel.get(): # If the user pressed "Cancel" on the folder selection dialog, revert back to default.
             DLSel.set(DLOptions[0])
 downloadLocation = tk.OptionMenu(DLFrame, DLSel, *DLOptions, command=changeDL)
-downloadLocation.config(width=30)
+downloadLocation.config(width=30, anchor="w", padx=10, indicatoron=0)
 
 ## GEOMETRY ##
 
