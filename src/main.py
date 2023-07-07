@@ -8,15 +8,16 @@ from tkinter import filedialog
 from tkinter import messagebox
 from PIL import ImageTk, Image
 
-ytget_version = "3.0"
-ytget_optfolder = os.environ["APPDATA"] + "\\YTget"
-os_ver = platform.system() + " " + platform.release()
+YTGET_VERSION = "3.0"
+YTGET_OPTFOLDER = os.environ["APPDATA"] + "\\YTget"
+OS_VER = platform.system() + " " + platform.release()
+
 def loadSettings():
-    if not os.path.exists(ytget_optfolder):
-        os.makedirs(ytget_optfolder)
+    if not os.path.exists(YTGET_OPTFOLDER):
+        os.makedirs(YTGET_OPTFOLDER)
     # Read settings:
     try:
-        optFile = open(ytget_optfolder + "\\settings", "r")
+        optFile = open(YTGET_OPTFOLDER + "\\settings", "r")
     except FileNotFoundError:
         # The settings file does not exist, so initialize the settings blank.
         global defaultDL
@@ -38,12 +39,12 @@ def loadSettings():
 """YTget settings have become corrupted, and will be reset.
 Please relaunch the program.""")
             optFile.close()
-            os.remove(ytget_optfolder + "\\settings")
+            os.remove(YTGET_OPTFOLDER + "\\settings")
             os._exit(1)
 loadSettings()
 
 win = tk.Tk()
-win.title("YTget " + ytget_version)
+win.title("YTget " + YTGET_VERSION)
 win.resizable(False, False)
 window_icon = tk.PhotoImage(file = "images/icon-256p.png")
 win.iconphoto(False, window_icon)
@@ -58,6 +59,18 @@ def checkUpdates():
 def openGitHub():
     webbrowser.open("https://github.com/andy0dvlpr/YTget")
 
+def cutMenu():
+    linkEntry.event_generate("<<Cut>>")
+
+def copyMenu():
+    linkEntry.event_generate("<<Copy>>")
+
+def pasteMenu():
+    linkEntry.event_generate("<<Paste>>")
+
+def selallMenu():
+    linkEntry.selection_range(0, tk.END)
+
 def aboutWindowOpen():
 # About window
     aboutwin = tk.Toplevel(win)
@@ -71,7 +84,7 @@ def aboutWindowOpen():
     # abt_YTgetLogo = ImageTk.PhotoImage(Image.open("images/icon-90p.png"))
     # abt_lYTgetLogo = tk.Label(abtw, image=abt_YTgetLogo)
     abt_aboutLabel = tk.Label(abtw, text="About YTget")
-    abt_verLabel = tk.Label(abtw, text=f"You are currently running YTget {ytget_version}, under {os_ver}.")
+    abt_verLabel = tk.Label(abtw, text=f"You are currently running YTget {YTGET_VERSION}, under {OS_VER}.")
     abt_authorLabel = tk.Label(abtw, text="Software written by andy0dvlpr.")
     abt_legalLabel = tk.Label(abtw, font=("Arial", 8),
 text="""THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -152,7 +165,7 @@ def optWindowOpen():
             "vExt": opt_vExtSel.get()
         }
         jsonSettings = json.dumps(opt_Settings)
-        optFile = open(ytget_optfolder + "\\settings", "w")
+        optFile = open(YTGET_OPTFOLDER + "\\settings", "w")
         optFile.write(jsonSettings)
         optFile.close()
         loadSettings() # Load the new settings.
@@ -199,11 +212,10 @@ filemenu.add_command(label="Exit", command=closeProgram)
 menubar.add_cascade(label="File", menu=filemenu)
 # Edit
 editmenu = tk.Menu(menubar, tearoff=0)
-editmenu.add_command(label="Cut")
-editmenu.add_command(label="Copy")
-editmenu.add_command(label="Paste")
-editmenu.add_command(label="Delete")
-editmenu.add_command(label="Select All")
+editmenu.add_command(label="Cut", command=cutMenu)
+editmenu.add_command(label="Copy", command=copyMenu)
+editmenu.add_command(label="Paste", command=pasteMenu)
+editmenu.add_command(label="Select All", command=selallMenu)
 menubar.add_cascade(label="Edit", menu=editmenu)
 # Help
 helpmenu = tk.Menu(menubar, tearoff=0)
