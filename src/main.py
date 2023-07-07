@@ -71,6 +71,9 @@ def pasteMenu():
 def selallMenu():
     linkEntry.selection_range(0, tk.END)
 
+def showContext(event):
+    linkContext.post(event.x_root, event.y_root)
+
 def aboutWindowOpen():
 # About window
     aboutwin = tk.Toplevel(win)
@@ -253,6 +256,12 @@ def validateLink(*args):
 linkLabel = tk.Label(w, text="Link to video:")
 linkVar = tk.StringVar()
 linkEntry = tk.Entry(w, textvariable=linkVar, width=69) #nice
+linkContext = tk.Menu(w, tearoff=0)
+linkContext.add_command(label="Cut", command=cutMenu)
+linkContext.add_command(label="Copy", command=copyMenu)
+linkContext.add_command(label="Paste", command=pasteMenu)
+linkContext.add_command(label="Select All", command=selallMenu)
+linkEntry.bind("<Button-3>", showContext)
 linkVar.trace("w", validateLink)
 validTextString = tk.StringVar() # Used by validateLink(), which is called everytime the Entry is modified.
 validLabel = tk.Label(w, textvariable=validTextString)
