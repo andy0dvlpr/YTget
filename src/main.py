@@ -172,6 +172,9 @@ def optWindowOpen():
         optFile.write(jsonSettings)
         optFile.close()
         loadSettings() # Load the new settings.
+        # Update the text of the audio and video radio buttons accordingly:
+        audioButton["text"] = f"Audio ({aExt})"
+        videoButton["text"] = f"Video ({vExt})"
         optwin.destroy()
     def opt_CancelSettings():
         optwin.destroy()
@@ -273,9 +276,9 @@ validLabel.config(font=bold_font)
 formatFrame = tk.Frame(w)
 formatLabel = tk.Label(formatFrame, text="Format:")
 downloadFormat = tk.StringVar()
-audioButton = tk.Radiobutton(formatFrame, text="Audio", variable=downloadFormat, value="audio")
+audioButton = tk.Radiobutton(formatFrame, text=f"Audio ({aExt})", variable=downloadFormat, value="audio")
 audioButton.select() # We need to have a default option selected.
-videoButton = tk.Radiobutton(formatFrame, text="Video", variable=downloadFormat, value="video")
+videoButton = tk.Radiobutton(formatFrame, text=f"Video ({vExt})", variable=downloadFormat, value="video")
 
 DLFrame = tk.Frame(w)
 DLLabel = tk.Label(DLFrame, text="Download location:")
