@@ -1,12 +1,16 @@
 import os
 import json
+import webbrowser
+import platform
 import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
+from tkinter import messagebox
 from PIL import ImageTk, Image
 
 ytget_version = "3.0"
 ytget_optfolder = os.environ["APPDATA"] + "\\YTget"
+os_ver = platform.system() + " " + platform.release()
 def loadSettings():
     if not os.path.exists(ytget_optfolder):
         os.makedirs(ytget_optfolder)
@@ -21,9 +25,21 @@ def loadSettings():
         enforceBitrate = 0
         global bitrate
         bitrate = "192"
+        global aExt
+        aExt = "mp3"
+        global vExt
+        vExt = "mp4"
     else:
         # Load settings.
-        globals().update(json.loads(optFile.read())) # Take the stored variables and load them.
+        try:
+            globals().update(json.loads(optFile.read())) # Take the stored variables and load them.
+        except:
+            messagebox.showerror("Error reading settings file",
+"""YTget settings have become corrupted, and will be reset.
+Please relaunch the program.""")
+            optFile.close()
+            os.remove(ytget_optfolder + "\\settings")
+            os._exit(1)
 loadSettings()
 
 win = tk.Tk()
@@ -35,12 +51,44 @@ win.iconphoto(False, window_icon)
 def closeProgram():
     win.destroy()
 
+def checkUpdates():
+    # TODO: Implement an actual update checking mechanism.
+    webbrowser.open("https://github.com/andy0dvlpr/YTget/releases")
+
+def openGitHub():
+    webbrowser.open("https://github.com/andy0dvlpr/YTget")
+
 def aboutWindowOpen():
 # About window
     aboutwin = tk.Toplevel(win)
     aboutwin.title("About YTget")
     aboutwin.resizable(False, False)
     aboutwin.iconphoto(False, window_icon)
+
+    abtw = tk.Frame(aboutwin) # Frame for universal padding.
+    # For some reason, the image isn't being displayed.
+    # TODO: Fix
+    # abt_YTgetLogo = ImageTk.PhotoImage(Image.open("images/icon-90p.png"))
+    # abt_lYTgetLogo = tk.Label(abtw, image=abt_YTgetLogo)
+    abt_aboutLabel = tk.Label(abtw, text="About YTget")
+    abt_verLabel = tk.Label(abtw, text=f"You are currently running YTget {ytget_version}, under {os_ver}.")
+    abt_authorLabel = tk.Label(abtw, text="Software written by andy0dvlpr.")
+    abt_legalLabel = tk.Label(abtw, font=("Arial", 8),
+text="""THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.""")
+
+    abtw.grid(row=1, column=1, padx=20, pady=10)
+    # abt_lYTgetLogo.grid(row=1, column=1)
+    abt_aboutLabel.grid(row=2, column=1)
+    abt_verLabel.grid(row=3, column=1)
+    abt_authorLabel.grid(row=4, column=1)
+    abt_legalLabel.grid(row=5, column=1)
+
 
 def optWindowOpen():
     optwin = tk.Toplevel(win)
@@ -79,6 +127,19 @@ def optWindowOpen():
         opt_bitrateCheck.select() # If enforceBitrate from settings file is 1, set the IntVar from tk to 1 as well by selecting it.
         opt_BitrateOnOff() # The function supplied in "command" for opt_bitrateCheck isn't run when using the select() method, so we need to do it manually.
     opt_kbpsLabel = tk.Label(opt_bitrateFrame, text="kbps")
+    opt_extensionFrame = tk.Frame(optw)
+    opt_aExtLabel = tk.Label(opt_extensionFrame, text="Audio format")
+    opt_aExtOpt = ["mp3", "flac", "wav", "wma"]
+    opt_aExtSel = tk.StringVar()
+    opt_aExtSel.set(aExt)
+    opt_aExtMenu = tk.OptionMenu(opt_extensionFrame, opt_aExtSel, *opt_aExtOpt)
+    opt_aExtMenu.config(indicatoron=0)
+    opt_vExtLabel = tk.Label(opt_extensionFrame, text="Video format")
+    opt_vExtOpt = ["mp4", "mkv", "mov", "avi", "webm"]
+    opt_vExtSel = tk.StringVar()
+    opt_vExtSel.set(vExt)
+    opt_vExtMenu = tk.OptionMenu(opt_extensionFrame, opt_vExtSel, *opt_vExtOpt)
+    opt_vExtMenu.config(indicatoron=0)
 
 
     # OK and Cancel Buttons:
@@ -86,7 +147,9 @@ def optWindowOpen():
         opt_Settings = {
             "defaultDL": opt_defaultDL.get(),
             "enforceBitrate": opt_enforceBitrate.get(),
-            "bitrate": opt_Bitrate.get()
+            "bitrate": opt_Bitrate.get(),
+            "aExt": opt_aExtSel.get(),
+            "vExt": opt_vExtSel.get()
         }
         jsonSettings = json.dumps(opt_Settings)
         optFile = open(ytget_optfolder + "\\settings", "w")
@@ -102,22 +165,29 @@ def optWindowOpen():
 
     optw.grid(row=1, column=1, padx=20, pady=10)
     
-    opt_defaultDLFrame.grid(row=1, column=1, pady=5)
+    opt_defaultDLFrame.grid(row=1, column=1, pady=10)
     # Part of opt_defaultDLFrame:
     opt_defaultDLLabel.grid(row=1, column=1, sticky="w")
     opt_defaultDLEntry.grid(row=2, column=1)
     opt_defaultDLButton.grid(row=2, column=2, padx=(10, 0))
 
-    opt_bitrateFrame.grid(row=2, column=1, pady=5)
+    opt_bitrateFrame.grid(row=2, column=1, pady=10)
     # Part of opt_bitrateFrame
     opt_bitrateCheck.grid(row=1, column=1)
     opt_BitrateEntry.grid(row=1, column=2)
     opt_kbpsLabel.grid(row=1, column=3)
 
-    opt_ButtonFrame.grid(row=99, column=1, columnspan=2)
+    opt_extensionFrame.grid(row=3, column=1, pady=10)
+    # Part of opt_extensionFrame
+    opt_aExtLabel.grid(row=1, column=1)
+    opt_aExtMenu.grid(row=1, column=2)
+    opt_vExtLabel.grid(row=1, column=3)
+    opt_vExtMenu.grid(row=1, column=4)
+
+    opt_ButtonFrame.grid(row=99, column=1, columnspan=2, pady=(10, 5))
     # Part of opt_ButtonFrame:
-    opt_SaveButton.grid(row=1, column=1, sticky="e", padx=3, pady=5)
-    opt_CancelButton.grid(row=1, column=2, sticky="w", padx=3, pady=5)
+    opt_SaveButton.grid(row=1, column=1, sticky="e", padx=3)
+    opt_CancelButton.grid(row=1, column=2, sticky="w", padx=3)
 
 # Menubar
 menubar = tk.Menu(win)
@@ -137,8 +207,8 @@ editmenu.add_command(label="Select All")
 menubar.add_cascade(label="Edit", menu=editmenu)
 # Help
 helpmenu = tk.Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Check for Updates")
-helpmenu.add_command(label="View on GitHub")
+helpmenu.add_command(label="Check for Updates", command=checkUpdates)
+helpmenu.add_command(label="View on GitHub", command=openGitHub)
 helpmenu.add_command(label="About YTget", command=aboutWindowOpen)
 menubar.add_cascade(label="Help", menu=helpmenu)
 win.config(menu=menubar)
