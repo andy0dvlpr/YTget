@@ -7,17 +7,24 @@ from PIL import ImageTk, Image
 
 ytget_version = "3.0"
 ytget_optfolder = os.environ["APPDATA"] + "\\YTget"
-if not os.path.exists(ytget_optfolder):
-    os.makedirs(ytget_optfolder)
-# Read settings:
-try:
-    optFile = open(ytget_optfolder + "\\settings", "r")
-except FileNotFoundError:
-    # The settings file does not exist, so initialize the settings blank.
-    defaultDL = ""
-else:
-    # Load settings.
-    locals().update(json.loads(optFile.read())) # Take the stored variables and load them.
+def loadSettings():
+    if not os.path.exists(ytget_optfolder):
+        os.makedirs(ytget_optfolder)
+    # Read settings:
+    try:
+        optFile = open(ytget_optfolder + "\\settings", "r")
+    except FileNotFoundError:
+        # The settings file does not exist, so initialize the settings blank.
+        global defaultDL
+        defaultDL = ""
+        global enforceBitrate
+        enforceBitrate = 0
+        global bitrate
+        bitrate = "192"
+    else:
+        # Load settings.
+        globals().update(json.loads(optFile.read())) # Take the stored variables and load them.
+loadSettings()
 
 win = tk.Tk()
 win.title("YTget " + ytget_version)
@@ -42,38 +49,71 @@ def optWindowOpen():
     optwin.iconphoto(False, window_icon)
 
     optw = tk.Frame(optwin) # Frame for universal padding.
-    opt_defaultDLLabel = tk.Label(optw, text="Default save location:")
+    opt_defaultDLFrame = tk.Frame(optw)
+    opt_defaultDLLabel = tk.Label(opt_defaultDLFrame, text="Default save location:")
     opt_defaultDL = tk.StringVar()
     if not defaultDL: # If the setting is blank, use default:
         opt_defaultDL.set(os.environ["USERPROFILE"] + "\\Downloads")
     else:
         opt_defaultDL.set(defaultDL)
-    opt_defaultDLEntry = tk.Entry(optw, textvariable=opt_defaultDL, width=30)
+    opt_defaultDLEntry = tk.Entry(opt_defaultDLFrame, textvariable=opt_defaultDL, width=30)
     def opt_getDefaultDL():
         optwin.attributes("-topmost", 0) # Due to a tkinter bug, child windows go behind root windows when a file dialog opens.
         newDefaultDL = filedialog.askdirectory()
         optwin.attributes("-topmost", 1) # Now we set it back. This is how we circumvent the tkinter bug.
         if newDefaultDL: # If the user selected a folder
             opt_defaultDL.set(newDefaultDL)
-    opt_defaultDLButton = tk.Button(optw, text="Choose location", command=opt_getDefaultDL)
+    opt_defaultDLButton = tk.Button(opt_defaultDLFrame, text="Choose location", command=opt_getDefaultDL)
+    opt_bitrateFrame = tk.Frame(optw)
+    opt_enforceBitrate = tk.IntVar()
+    opt_Bitrate = tk.StringVar()
+    opt_Bitrate.set(bitrate)
+    opt_BitrateEntry = tk.Entry(opt_bitrateFrame, textvariable=opt_Bitrate, state=tk.DISABLED)
+    def opt_BitrateOnOff():
+        if opt_enforceBitrate.get() == 0:
+            opt_BitrateEntry.config(state=tk.DISABLED)
+        elif opt_enforceBitrate.get() == 1:
+            opt_BitrateEntry.config(state=tk.NORMAL)
+    opt_bitrateCheck = tk.Checkbutton(opt_bitrateFrame, text="Enforce bitrate for audio", variable=opt_enforceBitrate, onvalue=1, offvalue=0, command=opt_BitrateOnOff)
+    if enforceBitrate == 1:
+        opt_bitrateCheck.select() # If enforceBitrate from settings file is 1, set the IntVar from tk to 1 as well by selecting it.
+        opt_BitrateOnOff() # The function supplied in "command" for opt_bitrateCheck isn't run when using the select() method, so we need to do it manually.
+    opt_kbpsLabel = tk.Label(opt_bitrateFrame, text="kbps")
+
 
     # OK and Cancel Buttons:
     def opt_SaveSettings():
         opt_Settings = {
-            "defaultDL": opt_defaultDL.get()
+            "defaultDL": opt_defaultDL.get(),
+            "enforceBitrate": opt_enforceBitrate.get(),
+            "bitrate": opt_Bitrate.get()
         }
         jsonSettings = json.dumps(opt_Settings)
         optFile = open(ytget_optfolder + "\\settings", "w")
         optFile.write(jsonSettings)
         optFile.close()
+        loadSettings() # Load the new settings.
+        optwin.destroy()
+    def opt_CancelSettings():
+        optwin.destroy()
     opt_ButtonFrame = tk.Frame(optw)
     opt_SaveButton = tk.Button(opt_ButtonFrame, text="OK", command=opt_SaveSettings)
-    opt_CancelButton = tk.Button(opt_ButtonFrame, text="Cancel")
+    opt_CancelButton = tk.Button(opt_ButtonFrame, text="Cancel", command=opt_CancelSettings)
 
     optw.grid(row=1, column=1, padx=20, pady=10)
+    
+    opt_defaultDLFrame.grid(row=1, column=1, pady=5)
+    # Part of opt_defaultDLFrame:
     opt_defaultDLLabel.grid(row=1, column=1, sticky="w")
     opt_defaultDLEntry.grid(row=2, column=1)
-    opt_defaultDLButton.grid(row=2, column=2, padx=10)
+    opt_defaultDLButton.grid(row=2, column=2, padx=(10, 0))
+
+    opt_bitrateFrame.grid(row=2, column=1, pady=5)
+    # Part of opt_bitrateFrame
+    opt_bitrateCheck.grid(row=1, column=1)
+    opt_BitrateEntry.grid(row=1, column=2)
+    opt_kbpsLabel.grid(row=1, column=3)
+
     opt_ButtonFrame.grid(row=99, column=1, columnspan=2)
     # Part of opt_ButtonFrame:
     opt_SaveButton.grid(row=1, column=1, sticky="e", padx=3, pady=5)
@@ -148,7 +188,7 @@ videoButton = tk.Radiobutton(formatFrame, text="Video", variable=downloadFormat,
 
 DLFrame = tk.Frame(w)
 DLLabel = tk.Label(DLFrame, text="Download location:")
-DLOptions = ["Default location", "Choose another location..."]
+DLOptions = [f"Default location ({defaultDL})", "Choose another location..."]
 DLSel = tk.StringVar()
 DLSel.set(DLOptions[0])
 def changeDL(*args):
