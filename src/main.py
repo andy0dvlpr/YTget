@@ -1,3 +1,4 @@
+import downloader as d
 import os
 import json
 import webbrowser
@@ -145,7 +146,7 @@ def optWindowOpen():
     opt_kbpsLabel = tk.Label(opt_bitrateFrame, text="kbps")
     opt_extensionFrame = tk.Frame(optw)
     opt_aExtLabel = tk.Label(opt_extensionFrame, text="Audio format")
-    opt_aExtOpt = ["mp3", "flac", "wav", "wma"]
+    opt_aExtOpt = ["mp3", "flac", "wav"]
     opt_aExtSel = tk.StringVar()
     opt_aExtSel.set(aExt)
     opt_aExtMenu = tk.OptionMenu(opt_extensionFrame, opt_aExtSel, *opt_aExtOpt)
@@ -293,6 +294,11 @@ def changeDL(*args):
 downloadLocation = tk.OptionMenu(DLFrame, DLSel, *DLOptions, command=changeDL)
 downloadLocation.config(width=30, anchor="w", padx=10, indicatoron=0)
 
+def dwn():
+    d.downloader(linkVar, downloadFormat, aExt, vExt, enforceBitrate, bitrate, DLSel, DLOptions, defaultDL)
+
+dwnButton = tk.Button(w, text="Download", command=dwn)
+
 ## GEOMETRY ##
 fYTgetLogos.grid(column=1, row=1)
 lYTgetLogo.pack(side="left")
@@ -309,9 +315,11 @@ formatLabel.grid(row=1, column=1)
 audioButton.grid(row=2, column=1, sticky="w")
 videoButton.grid(row=3, column=1, sticky="w")
 
-DLFrame.grid(row=4, column=2)
+DLFrame.grid(row=4, column=2, sticky="e")
 # Part of DLFrame:
 DLLabel.grid(row=1, column=1)
 downloadLocation.grid(row=2, column=1)
+
+dwnButton.grid(row=5, column=1, columnspan=2, pady=(10, 0))
 
 win.mainloop()
