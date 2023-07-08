@@ -22,7 +22,7 @@ def loadSettings():
     except FileNotFoundError:
         # The settings file does not exist, so initialize the settings blank.
         global defaultDL
-        defaultDL = ""
+        defaultDL = os.environ["USERPROFILE"] + "\\Downloads"
         global enforceBitrate
         enforceBitrate = 0
         global bitrate
@@ -117,10 +117,7 @@ def optWindowOpen():
     opt_defaultDLFrame = tk.Frame(optw)
     opt_defaultDLLabel = tk.Label(opt_defaultDLFrame, text="Default save location:")
     opt_defaultDL = tk.StringVar()
-    if not defaultDL: # If the setting is blank, use default:
-        opt_defaultDL.set(os.environ["USERPROFILE"] + "\\Downloads")
-    else:
-        opt_defaultDL.set(defaultDL)
+    opt_defaultDL.set(defaultDL)
     opt_defaultDLEntry = tk.Entry(opt_defaultDLFrame, textvariable=opt_defaultDL, width=30)
     def opt_getDefaultDL():
         optwin.attributes("-topmost", 0) # Due to a tkinter bug, child windows go behind root windows when a file dialog opens.
@@ -283,7 +280,7 @@ videoButton = tk.Radiobutton(formatFrame, text=f"Video ({vExt})", variable=downl
 
 DLFrame = tk.Frame(w)
 DLLabel = tk.Label(DLFrame, text="Download location:")
-DLOptions = [f"Default location ({defaultDL})", "Choose another location..."]
+DLOptions = ["Default location (File > Preferences)", "Choose another location..."]
 DLSel = tk.StringVar()
 DLSel.set(DLOptions[0])
 def changeDL(*args):
