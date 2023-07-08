@@ -30,7 +30,7 @@ def loadSettings():
         global aExt
         aExt = "mp3"
         global vExt
-        vExt = "mp4"
+        vExt = "Auto"
     else:
         # Load settings.
         try:
@@ -152,7 +152,7 @@ def optWindowOpen():
     opt_aExtMenu = tk.OptionMenu(opt_extensionFrame, opt_aExtSel, *opt_aExtOpt)
     opt_aExtMenu.config(indicatoron=0)
     opt_vExtLabel = tk.Label(opt_extensionFrame, text="Video format")
-    opt_vExtOpt = ["mp4", "mkv", "mov", "avi", "webm"]
+    opt_vExtOpt = ["Auto", "mp4"]
     opt_vExtSel = tk.StringVar()
     opt_vExtSel.set(vExt)
     opt_vExtMenu = tk.OptionMenu(opt_extensionFrame, opt_vExtSel, *opt_vExtOpt)
@@ -295,7 +295,7 @@ downloadLocation = tk.OptionMenu(DLFrame, DLSel, *DLOptions, command=changeDL)
 downloadLocation.config(width=30, anchor="w", padx=10, indicatoron=0)
 
 def dwn():
-    d.downloader(linkVar, downloadFormat, aExt, vExt, enforceBitrate, bitrate, DLSel, DLOptions, defaultDL)
+    d.downloader(linkVar.get(), downloadFormat.get(), aExt, vExt, enforceBitrate, bitrate, DLSel.get(), DLOptions, defaultDL)
 
 dwnButton = tk.Button(w, text="Download", command=dwn)
 
